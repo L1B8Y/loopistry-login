@@ -1,40 +1,164 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Loopistry Login</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Loopistry — Login</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f7f7f7;
+      color: #222;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .box {
+      width: 100%;
+      max-width: 380px;
+      background: white;
+      padding: 35px;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    }
+
+    h1 {
+      text-align: center;
+      margin: 0 0 8px;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #777;
+      margin-bottom: 25px;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 12px;
+      border: 1px solid #ddd;
+      border-radius: 7px;
+      font-size: 15px;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 7px;
+      background: #222;
+      color: white;
+      font-size: 15px;
+      cursor: pointer;
+      margin-top: 5px;
+    }
+
+    button:hover {
+      opacity: 0.85;
+    }
+
+    .secondary {
+      background: #eee;
+      color: #222;
+    }
+
+    #message {
+      text-align: center;
+      margin-top: 15px;
+      font-size: 14px;
+    }
+
+    #loggedIn {
+      display: none;
+      text-align: center;
+    }
+
+    #loginBox {
+      display: block;
+    }
+  </style>
 </head>
+
 <body>
 
-  <h1>Loopistry</h1>
-  <h2>Log in</h2>
+  <div class="box">
 
-  <input type="email" id="email" placeholder="Email">
-  <br><br>
+    <!-- LOGIN -->
+    <div id="loginBox">
 
-  <input type="password" id="password" placeholder="Password">
-  <br><br>
+      <h1>Loopistry</h1>
 
-  <button onclick="login()">Log in</button>
-  <button onclick="signup()">Sign up</button>
+      <p class="subtitle">Log in to your account</p>
 
-  <p id="message"></p>
+      <input
+        type="email"
+        id="email"
+        placeholder="Email address"
+      >
+
+      <input
+        type="password"
+        id="password"
+        placeholder="Password"
+      >
+
+      <button onclick="login()">Log in</button>
+
+      <button class="secondary" onclick="signup()">Create account</button>
+
+      <p id="message"></p>
+
+    </div>
+
+    <!-- LOGGED IN -->
+    <div id="loggedIn">
+
+      <h1>You're logged in 🎉</h1>
+
+      <p class="subtitle" id="userEmail"></p>
+
+      <button onclick="logout()">Log out</button>
+
+    </div>
+
+  </div>
 
   <script>
+
     const SUPABASE_URL = "https://yjyazjczzxlmdnzplhce.supabase.co";
     const SUPABASE_KEY = "sb_publishable_tPH3sltYS1psBonf8pwDCg_JdZjgaOY";
 
+    let accessToken = null;
+
     async function signup() {
+
       const email = document.getElementById("email").value;
       const password = document.getElementById("password").value;
+
+      if (!email || !password) {
+        showMessage("Please enter your email and password.");
+        return;
+      }
 
       const response = await fetch(
         SUPABASE_URL + "/auth/v1/signup",
         {
           method: "POST",
+
           headers: {
             "Content-Type": "application/json",
             "apikey": SUPABASE_KEY
           },
+
           body: JSON.stringify({
             email: email,
             password: password
@@ -44,24 +168,38 @@
 
       const data = await response.json();
 
-      document.getElementById("message").textContent =
-        response.ok
-          ? "Account created! Check your email if confirmation is required."
-          : data.msg || data.message || "Something went wrong.";
+      if (response.ok) {
+        showMessage(
+          "Account created! Check your email if confirmation is required."
+        );
+      } else {
+        showMessage(
+          data.msg || data.message || "Something went wrong."
+        );
+      }
     }
 
+
     async function login() {
+
       const email = document.getElementById("email").value;
       const password = document.getElementById("password").value;
+
+      if (!email || !password) {
+        showMessage("Please enter your email and password.");
+        return;
+      }
 
       const response = await fetch(
         SUPABASE_URL + "/auth/v1/token?grant_type=password",
         {
           method: "POST",
+
           headers: {
             "Content-Type": "application/json",
             "apikey": SUPABASE_KEY
           },
+
           body: JSON.stringify({
             email: email,
             password: password
@@ -71,11 +209,47 @@
 
       const data = await response.json();
 
-      document.getElementById("message").textContent =
-        response.ok
-          ? "You're logged in! 🎉"
-          : data.error_description || data.msg || "Login failed.";
+      if (response.ok) {
+
+        accessToken = data.access_token;
+
+        document.getElementById("loginBox").style.display = "none";
+        document.getElementById("loggedIn").style.display = "block";
+
+        document.getElementById("userEmail").textContent =
+          email;
+
+      } else {
+
+        showMessage(
+          data.error_description ||
+          data.msg ||
+          "Login failed."
+        );
+      }
     }
+
+
+    function logout() {
+
+      accessToken = null;
+
+      document.getElementById("loginBox").style.display = "block";
+      document.getElementById("loggedIn").style.display = "none";
+
+      document.getElementById("email").value = "";
+      document.getElementById("password").value = "";
+
+      showMessage("");
+    }
+
+
+    function showMessage(text) {
+
+      document.getElementById("message").textContent = text;
+
+    }
+
   </script>
 
 </body>

@@ -14,88 +14,189 @@
     body {
       margin: 0;
       font-family: Arial, sans-serif;
-      background: #f7f7f7;
-      color: #222;
+      background: #f7f4ef;
+      color: #555;
+    }
 
+    /* HEADER */
+    header {
+      height: 82px;
+      background: #292929;
+      display: flex;
+      align-items: center;
+      padding: 0 40px;
+      gap: 18px;
+    }
+
+    .logo {
+      width: 64px;
+      height: 64px;
+      object-fit: cover;
+    }
+
+    .brand {
+      color: #e7b77f;
+      font-size: 30px;
+      font-weight: bold;
+      margin-right: auto;
+    }
+
+    nav a {
+      color: #ddd;
+      text-decoration: none;
+      margin-left: 25px;
+      font-size: 13px;
+    }
+
+    nav a:hover {
+      color: #e7b77f;
+    }
+
+    /* ACCOUNT AREA */
+    .account-section {
+      min-height: calc(100vh - 82px);
       display: flex;
       justify-content: center;
       align-items: center;
-
-      min-height: 100vh;
+      padding: 50px 20px;
     }
 
-    .box {
+    .account-box {
       width: 100%;
-      max-width: 420px;
-
+      max-width: 650px;
       background: white;
-
-      padding: 35px;
-
-      border-radius: 12px;
-
-      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-
+      padding: 50px;
       text-align: center;
+      border-radius: 4px;
+      box-shadow: 0 5px 25px rgba(0,0,0,0.08);
     }
 
-    h1 {
-      margin-top: 0;
+    .account-box h1 {
+      color: #dcae78;
+      font-size: 38px;
+      margin: 0 0 12px;
+    }
+
+    .welcome {
+      font-size: 17px;
+      margin-bottom: 35px;
+    }
+
+    .email-label {
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #999;
+      margin-bottom: 7px;
     }
 
     .email {
-      color: #666;
-      margin: 15px 0 25px;
+      font-size: 18px;
+      color: #555;
+      margin-bottom: 35px;
+      font-weight: bold;
     }
 
     button {
-      width: 100%;
-
-      padding: 12px;
-
-      border: none;
-      border-radius: 7px;
-
-      background: #222;
+      width: 220px;
+      padding: 13px 20px;
+      margin: 7px;
+      border: 1px solid #dcae78;
+      background: #e7b77f;
       color: white;
-
       font-size: 15px;
-
       cursor: pointer;
-
-      margin-top: 8px;
     }
 
     button:hover {
       opacity: 0.85;
     }
 
-    .secondary {
-      background: #eee;
-      color: #222;
+    .logout {
+      background: white;
+      color: #9b6d3d;
+    }
+
+    /* MOBILE */
+    @media (max-width: 800px) {
+      header {
+        height: auto;
+        padding: 15px;
+        flex-wrap: wrap;
+      }
+
+      .brand {
+        font-size: 24px;
+      }
+
+      nav {
+        width: 100%;
+        text-align: center;
+        padding-top: 10px;
+      }
+
+      nav a {
+        display: inline-block;
+        margin: 5px 8px;
+      }
+
+      .account-box {
+        padding: 35px 20px;
+      }
     }
   </style>
 </head>
 
 <body>
 
-  <div class="box">
+  <header>
 
-    <h1>My Account</h1>
+    <img src="logo.png" class="logo" alt="Loopistry logo">
 
-    <p>Welcome to Loopistry 👋</p>
+    <div class="brand">
+      Loopistry
+    </div>
 
-    <p class="email" id="email"></p>
+    <nav>
+      <a href="https://www.loopistry.co.uk">HOME</a>
+      <a href="https://www.loopistry.co.uk">CROCHET PROJECTS</a>
+      <a href="https://www.loopistry.co.uk">CROCHET TIPS & TRICKS</a>
+      <a href="https://www.loopistry.co.uk">ABOUT LOOPISTRY</a>
+      <a href="https://www.loopistry.co.uk">YARN & HOOK GUIDES</a>
+    </nav>
 
-    <button onclick="goToLoopistry()">
-      Back to Loopistry
-    </button>
+  </header>
 
-    <button class="secondary" onclick="logout()">
-      Log out
-    </button>
 
-  </div>
+  <main class="account-section">
+
+    <div class="account-box">
+
+      <h1>My Account</h1>
+
+      <p class="welcome">
+        Welcome back to Loopistry 🧶
+      </p>
+
+      <p class="email-label">
+        Logged in as
+      </p>
+
+      <p class="email" id="email">
+        Loading...
+      </p>
+
+      <button onclick="goToLoopistry()">
+        Back to Loopistry
+      </button>
+
+      <button class="logout" onclick="logout()">
+        Log out
+      </button>
+
+    </div>
+
+  </main>
 
 
   <script>
@@ -107,17 +208,13 @@
       localStorage.getItem("loopistry_email");
 
 
-    // If the person isn't logged in,
-    // send them back to the login page.
-
     if (!accessToken || !email) {
 
       window.location.href = "index.html";
 
     } else {
 
-      document.getElementById("email").textContent =
-        email;
+      document.getElementById("email").textContent = email;
 
     }
 
